@@ -34,8 +34,9 @@ public class OrderDAO extends AbstractDAO<Order> implements IOrderDAO {
     }
 
     @Override
-    public void update(Order order) {
+    public boolean update(Order order) {
 
+        return false;
     }
 
     @Override

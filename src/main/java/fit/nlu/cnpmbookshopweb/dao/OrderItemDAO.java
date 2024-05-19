@@ -24,8 +24,9 @@ public class OrderItemDAO extends AbstractDAO<OrderItem> {
     }
 
     @Override
-    public void update(OrderItem orderItem) {
+    public boolean update(OrderItem orderItem) {
 
+        return false;
     }
 
     @Override
