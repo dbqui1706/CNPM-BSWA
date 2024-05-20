@@ -6,10 +6,7 @@ import fit.nlu.cnpmbookshopweb.model.Order;
 import fit.nlu.cnpmbookshopweb.model.OrderItem;
 import fit.nlu.cnpmbookshopweb.model.Product;
 import fit.nlu.cnpmbookshopweb.model.User;
-import fit.nlu.cnpmbookshopweb.service.OrderItemService;
-import fit.nlu.cnpmbookshopweb.service.OrderService;
-import fit.nlu.cnpmbookshopweb.service.ProductService;
-import fit.nlu.cnpmbookshopweb.service.UserService;
+import fit.nlu.cnpmbookshopweb.service.*;
 import fit.nlu.cnpmbookshopweb.utils.JsonUtil;
 import fit.nlu.cnpmbookshopweb.utils.Protector;
 
@@ -30,7 +27,7 @@ import java.util.stream.Stream;
 public class ProductController extends HttpServlet {
     private final ProductService productService = new ProductService();
     private final UserService userService = new UserService();
-
+    private final WishListItemService wishlistItemService = new WishListItemService();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Tạo một user giả
@@ -47,6 +44,9 @@ public class ProductController extends HttpServlet {
             default:
                 sendRedirectProduct(request, response);
         }
+
+        int isWishlistItem = wishlistItemService.countByUserIdAndProductId(1L)  > 0 ? 1 : 0;
+        request.setAttribute("isWishlistItem", isWishlistItem);
     }
 
 

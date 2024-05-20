@@ -10,5 +10,9 @@ public class UserService {
     public User getByID(Long id) {
         return userDao.getByID(id);
     }
+    private static final UserService instance = new UserService();
+    public static UserService getInstance() {
+        return instance;
+    }
 
 }

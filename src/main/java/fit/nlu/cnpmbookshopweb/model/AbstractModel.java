@@ -10,4 +10,7 @@ public abstract class AbstractModel {
     private Long id;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private String modifiedBy;
+    private String createdBy;
+    private Location location;
 }
