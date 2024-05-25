@@ -27,11 +27,11 @@ import java.util.stream.Stream;
 public class ProductController extends HttpServlet {
     private final ProductService productService = new ProductService();
     private final UserService userService = new UserService();
-    private final WishListItemService wishlistItemService = new WishListItemService();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Tạo một user giả
-        User fakeSessionUser = userService.getByID(1L);
+        User fakeSessionUser = userService.getByID(2L);
         request.getSession().setAttribute("currentUser", fakeSessionUser);
         String uri = request.getRequestURI();
         switch (uri) {
@@ -45,8 +45,7 @@ public class ProductController extends HttpServlet {
                 sendRedirectProduct(request, response);
         }
 
-        int isWishlistItem = wishlistItemService.countByUserIdAndProductId(1L)  > 0 ? 1 : 0;
-        request.setAttribute("isWishlistItem", isWishlistItem);
+
     }
 
 
@@ -126,6 +125,7 @@ public class ProductController extends HttpServlet {
     private void sendRedirectProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Tạo một product giả
         Product fakeProduct = productService.getByID(1L);
+        request.getSession().setAttribute("product", fakeProduct);
         fakeProduct.setDescription(
                 Optional.ofNullable(
                         Stream.of(fakeProduct.getDescription().split("(\r\n|\n)"))

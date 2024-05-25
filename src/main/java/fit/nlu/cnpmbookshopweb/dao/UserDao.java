@@ -2,6 +2,7 @@ package fit.nlu.cnpmbookshopweb.dao;
 
 import fit.nlu.cnpmbookshopweb.model.User;
 import fit.nlu.cnpmbookshopweb.utils.DatabaseConnector;
+import org.jdbi.v3.core.Jdbi;
 
 public class UserDao extends AbstractDAO<User> {
     @Override
@@ -28,4 +29,5 @@ public class UserDao extends AbstractDAO<User> {
                     .one();
         });
     }
+
 }
