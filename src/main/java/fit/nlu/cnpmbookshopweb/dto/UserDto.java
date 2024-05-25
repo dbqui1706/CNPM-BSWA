@@ -1,4 +1,4 @@
-package com.example.bookshopwebapplication.dto;
+package fit.nlu.cnpmbookshopweb.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

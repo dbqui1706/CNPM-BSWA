@@ -1,17 +1,12 @@
 package fit.nlu.cnpmbookshopweb.controller.client;
 
-import fit.nlu.cnpmbookshopweb.dto.RequestOrderBuyNow;
-import fit.nlu.cnpmbookshopweb.dto.ResponseProductDetail;
+import fit.nlu.cnpmbookshopweb.dto.*;
 import fit.nlu.cnpmbookshopweb.model.Order;
 import fit.nlu.cnpmbookshopweb.model.OrderItem;
 import fit.nlu.cnpmbookshopweb.model.Product;
 import fit.nlu.cnpmbookshopweb.model.User;
-import fit.nlu.cnpmbookshopweb.service.OrderItemService;
-import fit.nlu.cnpmbookshopweb.service.OrderService;
-import fit.nlu.cnpmbookshopweb.service.ProductService;
-import fit.nlu.cnpmbookshopweb.service.UserService;
-import fit.nlu.cnpmbookshopweb.utils.JsonUtil;
-import fit.nlu.cnpmbookshopweb.utils.Protector;
+import fit.nlu.cnpmbookshopweb.service.*;
+import fit.nlu.cnpmbookshopweb.utils.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,128 +15,158 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@WebServlet(urlPatterns = {"/product", "/buy-now", "/validation-info"})
+@WebServlet("/product")
 public class ProductController extends HttpServlet {
     private final ProductService productService = new ProductService();
     private final UserService userService = new UserService();
+    private final ProductReviewService productReviewService = new ProductReviewService();
+    private static final int PRODUCT_REVIEWS_PER_PAGE = 2;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Tạo một user giả
         User fakeSessionUser = userService.getByID(1L);
         request.getSession().setAttribute("currentUser", fakeSessionUser);
-        String uri = request.getRequestURI();
-        switch (uri) {
-            case "/buy-now":
-                sendRedirectBuyNow(request, response);
-                return;
-            case "validation-info":
-                sendRedirectValidationInfo(request, response);
-                return;
-            default:
-                sendRedirectProduct(request, response);
+        // Lấy id của product và đối tượng product từ database theo id này
+        long id = 1L;
+        Optional<ProductDto> productFromServer = Optional.ofNullable(productService.getByID(id).get());
+        if (productFromServer.isPresent()) {
+
+            // Lấy product từ productFromServer
+            ProductDto product = productFromServer.get();
+            product.setDescription(TextUtils.toParagraph(
+                    Optional.ofNullable(product.getDescription()).orElse(""))
+            );
+
+            // Lấy tổng số đánh giá (productReview) của sản phẩm
+            int totalProductReviews = productReviewService.countByProductId(id);
+
+            // Lấy trang đánh giá hiện tại, gặp ngoại lệ (chuỗi không phải số, nhỏ hơn 1, lớn hơn tổng số trang)
+            // thì gán bằng 1
+            String pageReviewParam = Optional.ofNullable(request.getParameter("pageReview")).orElse("1");
+            int pageReview = Integer.parseInt(pageReviewParam);
+
+            // Tính tổng số Reviews
+            int totalPagesOfProductReviews = Paging.totalPages(totalProductReviews, PRODUCT_REVIEWS_PER_PAGE);
+
+            // Tính mốc truy vấn (offset)
+            int offset = Paging.offset(pageReview, totalPagesOfProductReviews, PRODUCT_REVIEWS_PER_PAGE);
+
+            // Lấy các productReview theo productId
+            List<ProductReviewDto> productReviews = productReviewService.getOrderedPartByProductId(
+                    PRODUCT_REVIEWS_PER_PAGE, offset, "createdAt", "DESC", id
+            );
+            productReviews.forEach(productReview -> productReview.setContent(
+                    TextUtils.toParagraph(productReview.getContent())));
+
+            // Lấy tổng cộng số sao đánh giá của sản phẩm
+            int sumRatingScores = productReviewService.sumRatingScoresByProductId(id);
+
+            // Tính số sao đánh giá trung bình
+            int averageRatingScore = (totalProductReviews == 0) ? 0 : (sumRatingScores / totalProductReviews);
+
+
+            // Kiểm tra có phải là sản phẩm yêu thích
+            Optional<UserDto> currentUser = Optional.ofNullable(
+                    ((User) request.getSession().getAttribute("currentUser")).get()
+            );
+
+            request.setAttribute("product", product);
+            request.setAttribute("totalProductReviews", totalProductReviews);
+            request.setAttribute("productReviews", productReviews);
+            request.setAttribute("totalPagesOfProductReviews", totalPagesOfProductReviews);
+            request.setAttribute("pageReview", pageReview);
+            request.setAttribute("averageRatingScore", averageRatingScore);
+            request.getRequestDispatcher("/views/client/product.jsp").forward(request, response);
+        } else {
+            // Nếu id không phải là số nguyên hoặc không hiện diện trong bảng product
+            response.sendRedirect(request.getContextPath() + "/");
         }
     }
 
-
+    // Xử lý thêm review
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (req.getRequestURI().equals("/buy-now")) {
-            RequestOrderBuyNow requestOrder = JsonUtil.get(req, RequestOrderBuyNow.class);
-            User sessionUser = (User) req.getSession().getAttribute("currentUser");
-            String formatAddress = String.format("%s, %s, %s, %s",
-                    requestOrder.getAddress(), requestOrder.getCity(),
-                    requestOrder.getDistrict(), requestOrder.getWard());
+        ProductService productService = new ProductService();
+        ProductReviewService productReviewService = new ProductReviewService();
 
-            Order order = new Order();
-            order.setUserIdOrdered(sessionUser.getId());
-            order.setStatus(0);
-            order.setNameReceiver(requestOrder.getFirstname() + requestOrder.getLastname());
-            order.setAddressReceiver(formatAddress);
-            order.setEmailReceiver(requestOrder.getEmail());
-            order.setPhoneReceiver(requestOrder.getPhoneNumber());
-            switch (requestOrder.getDelivery()) {
-                case "EXPRESS":
-                    order.setDeliveryMethod(2);
-                    order.setDeliveryPrice(50000.0);
-                default:
-                    order.setDeliveryMethod(1);
-                    order.setDeliveryPrice(15000.0);
-            }
+        // doPost(userId, productId, ratingScore, content) gửi về controller
+        Map<String, String> values = new HashMap<>();
+        values.put("userId", req.getParameter("userId"));
+        values.put("productId", req.getParameter("productId"));
+        values.put("ratingScore", req.getParameter("ratingScore"));
+        values.put("content", req.getParameter("content"));
 
-            final OrderService orderService = new OrderService();
-            final OrderItemService orderItemService = new OrderItemService();
+        System.out.println("UserID: " + req.getParameter("userId"));
+        System.out.println("ProductID: " + req.getParameter("productId"));
+        System.out.println("Rating Score: " + req.getParameter("ratingScore"));
+        System.out.println("Content: " + req.getParameter("content"));
 
-            Optional<Long> orderID = Protector
-                    .of(() -> orderService.save(order))
-                    .done(d -> resp.setStatus(HttpServletResponse.SC_CREATED))
-                    .fail(f -> resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)).get();
+        // Validate(ratingScore, content)
+        Map<String, List<String>> violations = new HashMap<>();
+        violations.put("ratingScoreViolations", Validator.of(values.get("ratingScore"))
+                .isNotNull()
+                .toList());
+        violations.put("contentViolations", Validator.of(values.get("content"))
+                .isNotNullAndEmpty()
+                .isAtLeastOfLength(10)
+                .toList());
 
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrderID(orderID.get());
-            orderItem.setProductID(requestOrder.getProductId());
-            orderItem.setQuantity(requestOrder.getQuantity());
-            Protector.of(() -> orderItemService.save(orderItem))
-                    .done(d -> resp.setStatus(HttpServletResponse.SC_CREATED))
-                    .fail(f -> resp.setStatus(HttpServletResponse.SC_BAD_REQUEST));
+        int sumOfViolations = violations.values().stream().mapToInt(List::size).sum();
+
+        String successMessage = "Đã đánh giá thành công!";
+        String errorAddReviewMessage = "Đã có lỗi truy vấn!";
+        AtomicReference<String> anchor = new AtomicReference<>("");
+
+        // Fragment validate
+        // Nếu validate thành công
+        if (sumOfViolations == 0) { // ok
+
+            // create ProductReview
+            ProductReviewDto productReview = new ProductReviewDto(
+                    0L,
+                    Protector.of(() -> Integer.parseInt(values.get("ratingScore"))).get(0),
+                    values.get("content"),
+                    1,
+                    new Timestamp(System.currentTimeMillis()),
+                    null,
+                    Protector.of(() -> new UserService()
+                            .getByID(Long.parseLong(values.get("userId"))).get()).get().get(),
+                    Protector.of(() -> productService.getByID(
+                            Long.parseLong(values.get("productId"))).get()).get().get()
+            );
+
+            // insert ProductReview
+            Protector.of(() -> productReviewService.insert(productReview))
+
+                    // Fragment: Save thành công hay ko 
+                    // Thành công: => Thông báo cho người dùng là đã đánh giá thành công
+                    .done(run -> {
+                        req.getSession().setAttribute("successMessage", successMessage);
+                        anchor.set("#review");
+                    })
+
+                    // Thất bại: => Thông báo LỖI: đã có lỗi truy vấn
+                    .fail(exception -> {
+                        req.getSession().setAttribute("values", values);
+                        req.getSession().setAttribute("errorAddReviewMessage", errorAddReviewMessage);
+                        anchor.set("#review-form");
+                    });
+            // end fragment insert
+            // end Success part of alt fragment validate
+
+            // secondary case of validate fragment
+        } else {
+            // thông báo lỗi vào input
+            req.getSession().setAttribute("values", values);
+            req.getSession().setAttribute("violations", violations);
+            anchor.set("#review-form");
         }
-    }
 
-    private void sendRedirectBuyNow(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Long productID = Long.parseLong(request.getParameter("productId"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-
-        Product product = productService.getByID(productID);
-
-        Double tempPrice = product.getDiscount() == 0
-                ? product.getPrice() * quantity
-                : product.getPrice() * product.getDiscount() * quantity;
-
-        ResponseProductDetail productDetail = ResponseProductDetail.builder()
-                .productID(productID)
-                .nameProduct(product.getName())
-                .imageName(product.getImageName())
-                .price(product.getDiscount() == 0
-                        ? product.getPrice()
-                        : product.getPrice() * product.getDiscount())
-                .quantityBuy(quantity)
-                .total(product.getDiscount() == 0
-                        ? product.getPrice() * quantity
-                        : product.getPrice() * product.getDiscount() * quantity)
-                .build();
-        List<ResponseProductDetail> productDetails = Arrays.asList(productDetail);
-        request.setAttribute("product", product);
-        request.setAttribute("productDetails", productDetails);
-        request.setAttribute("tempPrice", tempPrice);
-
-        request.getRequestDispatcher("/views/client/buyNow.jsp").forward(request, response);
-    }
-
-    private void sendRedirectProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Tạo một product giả
-        Product fakeProduct = productService.getByID(1L);
-        fakeProduct.setDescription(
-                Optional.ofNullable(
-                        Stream.of(fakeProduct.getDescription().split("(\r\n|\n)"))
-                                .filter(paragraph -> !paragraph.isEmpty())
-                                .map(paragraph -> "<p>" + paragraph + "</p>")
-                                .collect(Collectors.joining(""))
-                ).orElse("")
-        );
-        // Lấy tổng số đánh giá (productReview) của sản phẩm
-        int totalProductReviews = 150;
-        request.setAttribute("product", fakeProduct);
-        request.setAttribute("totalProductReviews", totalProductReviews);
-        request.getRequestDispatcher("/views/client/product.jsp").forward(request, response);
-    }
-
-    private void sendRedirectValidationInfo(HttpServletRequest request, HttpServletResponse response) {
-
+        resp.sendRedirect(req.getContextPath() + "/product?id=" + values.get("productId") + anchor);
     }
 }

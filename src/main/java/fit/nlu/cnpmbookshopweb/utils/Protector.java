@@ -1,11 +1,14 @@
 package fit.nlu.cnpmbookshopweb.utils;
 
+import lombok.Getter;
+
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Protector<R> {
     private R returnObject;
+    @Getter
     private Throwable exceptionObject;
 
     // Nhận vào hàm có trả về giá trị: insert(t), getByXXX(t), getAll()

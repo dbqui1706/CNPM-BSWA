@@ -1,13 +1,10 @@
-package com.example.bookshopwebapplication.dto;
+package fit.nlu.cnpmbookshopweb.dto;
 
-import com.example.bookshopwebapplication.entities.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor

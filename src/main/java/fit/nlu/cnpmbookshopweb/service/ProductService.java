@@ -1,6 +1,7 @@
 package fit.nlu.cnpmbookshopweb.service;
 
 import fit.nlu.cnpmbookshopweb.dao.ProductDao;
+import fit.nlu.cnpmbookshopweb.dto.ProductDto;
 import fit.nlu.cnpmbookshopweb.model.Product;
 
 public class ProductService {
@@ -9,4 +10,5 @@ public class ProductService {
     public Product getByID(Long id) {
         return productDao.getByID(id);
     }
+
 }

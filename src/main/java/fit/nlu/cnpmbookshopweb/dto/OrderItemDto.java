@@ -1,7 +1,7 @@
-package com.example.bookshopwebapplication.dto;
+package fit.nlu.cnpmbookshopweb.dto;
 
-import com.example.bookshopwebapplication.entities.Order;
-import com.example.bookshopwebapplication.entities.Product;
+import fit.nlu.cnpmbookshopweb.dto.ProductDto;
+import fit.nlu.cnpmbookshopweb.dto.OrderDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
