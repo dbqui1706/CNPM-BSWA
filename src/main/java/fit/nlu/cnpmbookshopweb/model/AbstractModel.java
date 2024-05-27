@@ -1,11 +1,12 @@
 package fit.nlu.cnpmbookshopweb.model;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.sql.Timestamp;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class AbstractModel {
     private Long id;
     private String modifiedBy;
@@ -62,4 +63,5 @@ public abstract class AbstractModel {
     }
 
     private Location location;
+
 }

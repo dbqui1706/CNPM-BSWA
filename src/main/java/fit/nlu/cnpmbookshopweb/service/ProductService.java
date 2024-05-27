@@ -9,7 +9,9 @@ public class ProductService {
     private final ProductDao productDao = new ProductDao();
 
     public Product getByID(Long id) {
-        return productDao.getByID(id);
+        Product product = productDao.getByID(id);
+        product.setId(id);
+        return product;
     }
 
 }

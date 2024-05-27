@@ -13,6 +13,7 @@
     <script src="${pageContext.request.contextPath}/js/toast.js" type="module"></script>
     <script src="${pageContext.request.contextPath}/js/product.js" type="module"></script>
 
+
 </head>
 
 <body>
@@ -117,7 +118,6 @@
                 </dl>
 
                 <div>
-
                     <button type="button" class="btn btn-danger" id="add-wishlist-item"
                             title="Thêm vào danh sách yêu thích" ${requestScope.isWishlistItem == 1 ? 'disabled' : ''}>
                         <i class="bi bi-heart"></i>
@@ -185,8 +185,49 @@
 <jsp:include page="/common/client/footer.jsp"/>
 
 <div class="toast-container position-fixed bottom-0 start-0 p-3"></div> <!-- toast-container.// -->
+<!-- Custom Scripts -->
+<script src="<c:url value="/js/toast.js"/>" type="text/javascript"></script>
+<%--<script src="<c:url value="/js/product.js"/>" type="text/javascript">--%>
+<script>
+    // import createToast, {toastComponent} from "./toast.js";
+
+    // STATIC DATA
+    const contextPathMetaTag = document.querySelector("meta[name='contextPath']");
+    const currentUserIdMetaTag = document.querySelector("meta[name='currentUserId']");
+    const productIdMetaTag = document.querySelector("meta[name='productId']");
+
+    const quantityInput = document.querySelector("#cart-item-quantity");
+    const productTitleElement = document.querySelector(".title");
+
+    // MESSAGES
+    const REQUIRED_SIGNIN_MESSAGE = "Vui lòng đăng nhập để thực hiện thao tác!";
+    const SUCCESS_ADD_CART_ITEM_MESSAGE = (quantity, productTitle) =>
+        `Đã thêm thành công ${quantity} sản phẩm ${productTitle} vào giỏ hàng!`;
+    const FAILED_ADD_CART_ITEM_MESSAGE = "Đã có lỗi truy vấn!";
+    const SUCCESS_ADD_WISHLIST_ITEM_MESSAGE = (productTitle) =>
+        `Đã thêm thành công sản phẩm ${productTitle} vào danh sách yêu thích!`;
+    const FAILED_ADD_WISHLIST_ITEM_MESSAGE = "Đã có lỗi truy vấn!";
+
+    // EVENT HANDLERS
+    function noneSigninEvent() {
+        createToast(toastComponent(REQUIRED_SIGNIN_MESSAGE));
+    }
 
 
+    // MAIN
+    const buyNowBtn = document.querySelector("#buy-now");
+    console.log(buyNowBtn)
+    if (currentUserIdMetaTag) {
+        buyNowBtn.addEventListener("click", async function() {
+            window.location.href = contextPathMetaTag.content + "/buy-now?productId="
+                + productIdMetaTag.content + "&quantity=" + quantityInput.value;
+        });
+    } else {
+        buyNowBtn.addEventListener("click", noneSigninEvent);
+    }
+
+
+</script>
 </body>
 
 </html>
