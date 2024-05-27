@@ -26,27 +26,26 @@ public class Setting extends HttpServlet {
         HttpSession session = request.getSession();
 
         // Lấy thông tin người dùng
-        User user = (User) session.getAttribute("currentUser");
+        User curentuser = (User) session.getAttribute("currentUser");
 
-        // Tạo một bảng lưu trữ các giá trị
-        Map<String, String> values = new HashMap<>();
-        values.put("username", request.getParameter("username"));
-        values.put("fullname", request.getParameter("fullname"));
-        values.put("email", request.getParameter("email"));
-        values.put("phoneNumber", request.getParameter("phoneNumber"));
-        values.put("gender", request.getParameter("gender"));
-        values.put("address", request.getParameter("address"));
+        // nhận thông tin từ request
+        String username =  request.getParameter("username");
+        String fullname =  request.getParameter("fullname");
+        String email = request.getParameter("email");
+        String phoneNumber = request.getParameter("phoneNumber");
+        String gender = request.getParameter("gender");
+        String address = request.getParameter("address");
 
         // newUser nhận thông tin cập nhật
         User newUser = new User(
-                user.getId(),
-                values.get("username"),
-                user.getPassword(),
-                values.get("fullname"),
-                values.get("email"),
-                values.get("phoneNumber"),
-                Integer.parseInt(values.get("gender")),
-                values.get("address"),
+                curentuser.getId(),
+                username,
+                curentuser.getPassword(),
+                fullname,
+                email,
+                phoneNumber,
+                Integer.parseInt(gender),
+                address,
                 "CUSTOMER"
         );
 
@@ -58,21 +57,22 @@ public class Setting extends HttpServlet {
         String errorMessage = "Cập nhật không thành công!";
 
 
-        if(listUsername.contains(values.get("username"))){
+        if(listUsername.contains(username)){
+            errorMessage = "Username đã tồn tại trong hệ thống";
             request.setAttribute("errorMessage", errorMessage);
-            request.setAttribute("user", user);
+//            request.setAttribute("user", curentuser);
             request.getRequestDispatcher("setting.jsp").forward(request, response);
         }
         else {
             // Ngược lại, kiểm tra cập nhật thành công hay không
             if(userService.update(newUser)){
                 request.setAttribute("successMessage", successMessage);
-                request.setAttribute("user", newUser);
+//                request.setAttribute("user", newUser);
                 request.getSession().setAttribute("currentUser", newUser);
                 request.getRequestDispatcher("setting.jsp").forward(request, response);
             }else {
                 request.setAttribute("errorMessage", errorMessage);
-                request.setAttribute("user", user);
+//                request.setAttribute("user", curentuser);
                 request.getRequestDispatcher("setting.jsp").forward(request, response);
             }
         }
