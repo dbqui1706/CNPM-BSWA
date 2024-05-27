@@ -128,68 +128,67 @@
 <jsp:include page="/common/client/footer.jsp"/>
 
 <script>
-    function clearError(input) {
-        var errorMessage = input.parentNode.querySelector('.error-message');
-        if (errorMessage) {
-            errorMessage.parentNode.removeChild(errorMessage);
-        }
-        input.classList.remove('error');
-    }
-
-    function showError(input, message) {
-        clearError(input);
-        var error = document.createElement('div');
-        error.className = 'error-message';
-        error.innerText = message;
-        input.classList.add('error');
-        input.parentNode.appendChild(error);
-    }
-
-    function validateFullName() {
-        var fullName = document.getElementById("inputFullname");
-        var fullNameRegex = /^[a-zA-Z\s]+$/;
-        if (!fullNameRegex.test(fullName.value)) {
-            showError(fullName, "Họ và tên không được chứa ký tự đặc biệt.");
-        } else {
-            clearError(fullName);
-        }
-    }
-
-    function validateEmail() {
-        var email = document.getElementById("inputEmail");
-        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email.value)) {
-            showError(email, "Email không hợp lệ.");
-        } else {
-            clearError(email);
-        }
-    }
-
-    function validatePhoneNumber() {
-        var phoneNumber = document.getElementById("inputPhoneNumber");
-        var phoneNumberRegex = /^[0-9]+$/;
-        if (!phoneNumberRegex.test(phoneNumber.value)) {
-            showError(phoneNumber, "Số điện thoại chỉ được chứa số.");
-        } else {
-            clearError(phoneNumber);
-        }
-    }
-
-    function validateAddress() {
-        var address = document.getElementById("inputAddress");
-        if (address.value.trim() === "") {
-            showError(address, "Địa chỉ không được để trống.");
-        } else {
-            clearError(address);
-        }
-    }
-
     document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("inputFullname").addEventListener("input", validateFullName);
-        document.getElementById("inputEmail").addEventListener("input", validateEmail);
-        document.getElementById("inputPhoneNumber").addEventListener("input", validatePhoneNumber);
-        document.getElementById("inputAddress").addEventListener("input", validateAddress);
+        function clearError(input) {
+            var errorMessage = input.parentNode.querySelector('.error-message');
+            if (errorMessage) {
+                errorMessage.parentNode.removeChild(errorMessage);
+            }
+            input.classList.remove('error');
+        }
+
+        function showError(input, message) {
+            clearError(input);
+            var error = document.createElement('div');
+            error.className = 'error-message';
+            error.innerText = message;
+            input.classList.add('error');
+            input.parentNode.appendChild(error);
+        }
+
+        function checkFormat() {
+            function validateInput(input, regex, errorMessage) {
+                if (!regex.test(input.value)) {
+                    showError(input, errorMessage);
+                } else {
+                    clearError(input);
+                }
+            }
+
+            var validators = {
+                inputFullname: {
+                    regex: /^[a-zA-Z\s]+$/,
+                    message: "Họ và tên không được chứa ký tự đặc biệt."
+                },
+                inputEmail: {
+                    regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Email không hợp lệ."
+                },
+                inputPhoneNumber: {
+                    regex: /^[0-9]+$/,
+                    message: "Số điện thoại chỉ được chứa số."
+                },
+                inputAddress: {
+                    regex: /.+/,
+                    message: "Địa chỉ không được để trống."
+                }
+            };
+
+            for (var id in validators) {
+                if (validators.hasOwnProperty(id)) {
+                    (function(id) {
+                        var input = document.getElementById(id);
+                        input.addEventListener("input", function() {
+                            validateInput(input, validators[id].regex, validators[id].message);
+                        });
+                    })(id);
+                }
+            }
+        }
+
+        checkFormat();
     });
+
 </script>
 
 

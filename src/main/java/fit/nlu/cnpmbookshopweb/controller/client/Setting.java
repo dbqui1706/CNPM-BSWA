@@ -39,6 +39,7 @@ public class Setting extends HttpServlet {
 
         // newUser nhận thông tin cập nhật
         User newUser = new User(
+                user.getId(),
                 values.get("username"),
                 user.getPassword(),
                 values.get("fullname"),
@@ -63,12 +64,17 @@ public class Setting extends HttpServlet {
             request.getRequestDispatcher("setting.jsp").forward(request, response);
         }
         else {
-            // Ngược lại, cập nhật thành công
-            userService.update(newUser);
-            request.setAttribute("successMessage", successMessage);
-            request.setAttribute("user", newUser);
-            request.getSession().setAttribute("currentUser", newUser);
-            request.getRequestDispatcher("setting.jsp").forward(request, response);
+            // Ngược lại, kiểm tra cập nhật thành công hay không
+            if(userService.update(newUser)){
+                request.setAttribute("successMessage", successMessage);
+                request.setAttribute("user", newUser);
+                request.getSession().setAttribute("currentUser", newUser);
+                request.getRequestDispatcher("setting.jsp").forward(request, response);
+            }else {
+                request.setAttribute("errorMessage", errorMessage);
+                request.setAttribute("user", user);
+                request.getRequestDispatcher("setting.jsp").forward(request, response);
+            }
         }
 
     }

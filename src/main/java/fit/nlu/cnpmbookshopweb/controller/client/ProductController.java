@@ -50,49 +50,49 @@ public class ProductController extends HttpServlet {
     }
 
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (req.getRequestURI().equals("/buy-now")) {
-            RequestOrderBuyNow requestOrder = JsonUtil.get(req, RequestOrderBuyNow.class);
-            User sessionUser = (User) req.getSession().getAttribute("currentUser");
-            String formatAddress = String.format("%s, %s, %s, %s",
-                    requestOrder.getAddress(), requestOrder.getCity(),
-                    requestOrder.getDistrict(), requestOrder.getWard());
-
-            Order order = new Order();
-            order.setUserIdOrdered(sessionUser.getId());
-            order.setStatus(0);
-            order.setNameReceiver(requestOrder.getFirstname() + requestOrder.getLastname());
-            order.setAddressReceiver(formatAddress);
-            order.setEmailReceiver(requestOrder.getEmail());
-            order.setPhoneReceiver(requestOrder.getPhoneNumber());
-            switch (requestOrder.getDelivery()) {
-                case "EXPRESS":
-                    order.setDeliveryMethod(2);
-                    order.setDeliveryPrice(50000.0);
-                default:
-                    order.setDeliveryMethod(1);
-                    order.setDeliveryPrice(15000.0);
-            }
-
-            final OrderService orderService = new OrderService();
-            final OrderItemService orderItemService = new OrderItemService();
-
-            Optional<Long> orderID = Protector
-                    .of(() -> orderService.save(order))
-                    .done(d -> resp.setStatus(HttpServletResponse.SC_CREATED))
-                    .fail(f -> resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)).get();
-
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrderID(orderID.get());
-            orderItem.setProductID(requestOrder.getProductId());
-            orderItem.setQuantity(requestOrder.getQuantity());
-            Protector.of(() -> orderItemService.save(orderItem))
-                    .done(d -> resp.setStatus(HttpServletResponse.SC_CREATED))
-                    .fail(f -> resp.setStatus(HttpServletResponse.SC_BAD_REQUEST));
-        }
-    }
-
+//    @Override
+//    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        if (req.getRequestURI().equals("/buy-now")) {
+//            RequestOrderBuyNow requestOrder = JsonUtil.get(req, RequestOrderBuyNow.class);
+//            User sessionUser = (User) req.getSession().getAttribute("currentUser");
+//            String formatAddress = String.format("%s, %s, %s, %s",
+//                    requestOrder.getAddress(), requestOrder.getCity(),
+//                    requestOrder.getDistrict(), requestOrder.getWard());
+//
+//            Order order = new Order();
+//            order.setUserIdOrdered(sessionUser.getId());
+//            order.setStatus(0);
+//            order.setNameReceiver(requestOrder.getFirstname() + requestOrder.getLastname());
+//            order.setAddressReceiver(formatAddress);
+//            order.setEmailReceiver(requestOrder.getEmail());
+//            order.setPhoneReceiver(requestOrder.getPhoneNumber());
+//            switch (requestOrder.getDelivery()) {
+//                case "EXPRESS":
+//                    order.setDeliveryMethod(2);
+//                    order.setDeliveryPrice(50000.0);
+//                default:
+//                    order.setDeliveryMethod(1);
+//                    order.setDeliveryPrice(15000.0);
+//            }
+//
+//            final OrderService orderService = new OrderService();
+//            final OrderItemService orderItemService = new OrderItemService();
+//
+//            Optional<Long> orderID = Protector
+//                    .of(() -> orderService.save(order))
+//                    .done(d -> resp.setStatus(HttpServletResponse.SC_CREATED))
+//                    .fail(f -> resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)).get();
+//
+//            OrderItem orderItem = new OrderItem();
+//            orderItem.setOrderID(orderID.get());
+//            orderItem.setProductID(requestOrder.getProductId());
+//            orderItem.setQuantity(requestOrder.getQuantity());
+//            Protector.of(() -> orderItemService.save(orderItem))
+//                    .done(d -> resp.setStatus(HttpServletResponse.SC_CREATED))
+//                    .fail(f -> resp.setStatus(HttpServletResponse.SC_BAD_REQUEST));
+//        }
+//    }
+//
     private void sendRedirectBuyNow(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long productID = Long.parseLong(request.getParameter("productId"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
