@@ -18,19 +18,19 @@ const SUCCESS_ADD_WISHLIST_ITEM_MESSAGE = (productTitle) =>
     `Đã thêm thành công sản phẩm ${productTitle} vào danh sách yêu thích!`;
 const FAILED_ADD_WISHLIST_ITEM_MESSAGE = "Đã có lỗi truy vấn!";
 
-// UTILS
-
 // EVENT HANDLERS
 function noneSigninEvent() {
     createToast(toastComponent(REQUIRED_SIGNIN_MESSAGE));
 }
 
-
 // MAIN
 const buyNowBtn = document.querySelector("#buy-now");
 
 if (currentUserIdMetaTag) {
-
+    buyNowBtn.addEventListener("click", async function() {
+        window.location.href = contextPathMetaTag.content + "/buy-now?productId="
+            + productIdMetaTag.content + "&quantity=" + quantityInput.value;
+    });
 } else {
     buyNowBtn.addEventListener("click", noneSigninEvent);
 }

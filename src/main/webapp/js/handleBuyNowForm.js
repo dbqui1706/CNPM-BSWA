@@ -75,6 +75,7 @@ $(document).ready(function () {
             $('#delivery-fee').text(fee.toLocaleString('vi-VN') + ' đ');
 
             let temPrice = parseFloat($('#temp-price').text().replace(" đ", "").replace(".", ""));
+            console.log("temp:", temPrice)
             let totalPrice = fee + temPrice;
             $('#total-product').html("<b>" + totalPrice.toLocaleString('vi-VN') + " đ</b>");
         },
