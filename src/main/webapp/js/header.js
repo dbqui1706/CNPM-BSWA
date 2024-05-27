@@ -29,7 +29,7 @@ function render() {
 
 // MAIN
 if (currentUserIdMetaTag) {
-  void state.initState();
+  // void state.initState();
 }
 
 export const setTotalCartItemsQuantity = state.setTotalCartItemsQuantity;

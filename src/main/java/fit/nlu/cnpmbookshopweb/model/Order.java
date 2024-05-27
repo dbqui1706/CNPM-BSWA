@@ -11,7 +11,7 @@ import java.util.StringJoiner;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderTest extends AbstractModel {
+public class Order extends AbstractModel {
     public User user;
     private int status;
     private String nameReceiver;
@@ -25,7 +25,7 @@ public class OrderTest extends AbstractModel {
     @Override
     public String toString() {
 
-        return new StringJoiner(",\n\t", OrderTest.class.getSimpleName() + "{\n", "\n}")
+        return new StringJoiner(",\n\t", Order.class.getSimpleName() + "{\n", "\n}")
                 .add("id:" + getId())
                 .add("user:" + user)
                 .add("nameReceiver:" + nameReceiver)

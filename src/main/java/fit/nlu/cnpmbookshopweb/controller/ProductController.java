@@ -1,4 +1,4 @@
-package fit.nlu.cnpmbookshopweb.controller.client;
+package fit.nlu.cnpmbookshopweb.controller;
 
 import fit.nlu.cnpmbookshopweb.model.Product;
 import fit.nlu.cnpmbookshopweb.model.User;

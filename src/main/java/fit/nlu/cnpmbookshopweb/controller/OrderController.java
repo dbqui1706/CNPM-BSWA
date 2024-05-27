@@ -1,4 +1,4 @@
-package fit.nlu.cnpmbookshopweb.controller.api;
+package fit.nlu.cnpmbookshopweb.controller;
 
 import fit.nlu.cnpmbookshopweb.dto.RequestOrderBuyNow;
 import fit.nlu.cnpmbookshopweb.dto.ResponseProductDetail;
@@ -21,14 +21,12 @@ import java.util.Optional;
 @WebServlet(urlPatterns = {"/buy-now"})
 public class OrderController extends HttpServlet {
     private final OrderService orderService = new OrderService();
-
+    private final ProductService productService = new ProductService();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Lấy id sản phẩm và số lượng của sản phẩm
         Long productID = Long.parseLong(request.getParameter("productId"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
-        final ProductService productService = new ProductService();
-
         // Lấy sản phẩm theo ID
         Product product = productService.getByID(productID);
 
@@ -88,7 +86,6 @@ public class OrderController extends HttpServlet {
                 order.setDeliveryMethod(1);
                 order.setDeliveryPrice(15000.0);
         }
-        final ProductService productService = new ProductService();
         Product product = productService.getByID(requestOrder.getProductId());
 
         OrderItem orderItem = new OrderItem();
