@@ -1,29 +1,42 @@
 package fit.nlu.cnpmbookshopweb.model;
 
-import fit.nlu.cnpmbookshopweb.utils.annotation.Email;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 @Data
-@ToString
-@NoArgsConstructor
 @AllArgsConstructor
-public class Order extends AbstractModel{
-    private Long userIdOrdered;
+@NoArgsConstructor
+public class OrderTest extends AbstractModel {
+    public User user;
     private int status;
     private String nameReceiver;
     private String addressReceiver;
-    @NotNull(message = "Email is not null")
-    @Email(regex = "^[A-Za-z0-9+_.-]+@(.+)$")
     private String emailReceiver;
     private String phoneReceiver;
     private Integer deliveryMethod;
     private Double deliveryPrice;
-    private List<OrderItem> orderItems;
+    private List<OrderItem> orderItems = new ArrayList<>();
     private Double totalPrice;
+    @Override
+    public String toString() {
+
+        return new StringJoiner(",\n\t", OrderTest.class.getSimpleName() + "{\n", "\n}")
+                .add("id:" + getId())
+                .add("user:" + user)
+                .add("nameReceiver:" + nameReceiver)
+                .add("addressReceiver:" + addressReceiver)
+                .add("emailReceiver:" + emailReceiver)
+                .add("phoneReceiver:" + phoneReceiver)
+                .add("status:" + status)
+                .add("deliveryMethod:" + deliveryMethod)
+                .add("deliveryPrice:" + deliveryPrice)
+                .add("createdAt:" + getCreatedAt())
+                .add("updatedAt:" + getUpdatedAt())
+                .toString();
+    }
 }
