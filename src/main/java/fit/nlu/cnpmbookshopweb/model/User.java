@@ -8,6 +8,7 @@ import java.util.StringJoiner;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Builder
 public class User extends AbstractModel{
     private String username;

@@ -20,7 +20,7 @@ public class ProductDao extends AbstractDAO<Product> implements IProductDAO {
     public void delete(Product product) {
 
     }
-
+    // phương thức xử lý câu query để lấy id sản phẩm
     @Override
     public Product getByID(Long id) {
         return DatabaseConnector.getJdbi().withHandle(handle -> {

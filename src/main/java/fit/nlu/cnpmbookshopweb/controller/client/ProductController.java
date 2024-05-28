@@ -12,7 +12,7 @@ import fit.nlu.cnpmbookshopweb.service.ProductService;
 import fit.nlu.cnpmbookshopweb.service.UserService;
 import fit.nlu.cnpmbookshopweb.utils.JsonUtil;
 import fit.nlu.cnpmbookshopweb.utils.Protector;
-
+import fit.nlu.cnpmbookshopweb.service.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,9 +33,9 @@ public class ProductController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Tạo một user giả
-        User fakeSessionUser = userService.getByID(1L);
-        request.getSession().setAttribute("currentUser", fakeSessionUser);
+// tạo môt user giả để làm chức năng
+        User SessionUser = userService.getByID(1L);
+        request.getSession().setAttribute("currentUser", SessionUser);
         String uri = request.getRequestURI();
         switch (uri) {
             case "/buy-now":
@@ -50,49 +50,49 @@ public class ProductController extends HttpServlet {
     }
 
 
-//    @Override
-//    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        if (req.getRequestURI().equals("/buy-now")) {
-//            RequestOrderBuyNow requestOrder = JsonUtil.get(req, RequestOrderBuyNow.class);
-//            User sessionUser = (User) req.getSession().getAttribute("currentUser");
-//            String formatAddress = String.format("%s, %s, %s, %s",
-//                    requestOrder.getAddress(), requestOrder.getCity(),
-//                    requestOrder.getDistrict(), requestOrder.getWard());
-//
-//            Order order = new Order();
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (req.getRequestURI().equals("/buy-now")) {
+            RequestOrderBuyNow requestOrder = JsonUtil.get(req, RequestOrderBuyNow.class);
+            User sessionUser = (User) req.getSession().getAttribute("currentUser");
+            String formatAddress = String.format("%s, %s, %s, %s",
+                    requestOrder.getAddress(), requestOrder.getCity(),
+                    requestOrder.getDistrict(), requestOrder.getWard());
+
+            Order order = new Order();
 //            order.setUserIdOrdered(sessionUser.getId());
-//            order.setStatus(0);
-//            order.setNameReceiver(requestOrder.getFirstname() + requestOrder.getLastname());
-//            order.setAddressReceiver(formatAddress);
-//            order.setEmailReceiver(requestOrder.getEmail());
-//            order.setPhoneReceiver(requestOrder.getPhoneNumber());
-//            switch (requestOrder.getDelivery()) {
-//                case "EXPRESS":
-//                    order.setDeliveryMethod(2);
-//                    order.setDeliveryPrice(50000.0);
-//                default:
-//                    order.setDeliveryMethod(1);
-//                    order.setDeliveryPrice(15000.0);
-//            }
-//
-//            final OrderService orderService = new OrderService();
-//            final OrderItemService orderItemService = new OrderItemService();
-//
-//            Optional<Long> orderID = Protector
-//                    .of(() -> orderService.save(order))
-//                    .done(d -> resp.setStatus(HttpServletResponse.SC_CREATED))
-//                    .fail(f -> resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)).get();
-//
-//            OrderItem orderItem = new OrderItem();
+            order.setStatus(0);
+            order.setNameReceiver(requestOrder.getFirstname() + requestOrder.getLastname());
+            order.setAddressReceiver(formatAddress);
+            order.setEmailReceiver(requestOrder.getEmail());
+            order.setPhoneReceiver(requestOrder.getPhoneNumber());
+            switch (requestOrder.getDelivery()) {
+                case "EXPRESS":
+                    order.setDeliveryMethod(2);
+                    order.setDeliveryPrice(50000.0);
+                default:
+                    order.setDeliveryMethod(1);
+                    order.setDeliveryPrice(15000.0);
+            }
+
+            final OrderService orderService = new OrderService();
+            final OrderItemService orderItemService = new OrderItemService();
+
+            Optional<Long> orderID = Protector
+                    .of(() -> orderService.save(order))
+                    .done(d -> resp.setStatus(HttpServletResponse.SC_CREATED))
+                    .fail(f -> resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)).get();
+
+            OrderItem orderItem = new OrderItem();
 //            orderItem.setOrderID(orderID.get());
 //            orderItem.setProductID(requestOrder.getProductId());
-//            orderItem.setQuantity(requestOrder.getQuantity());
-//            Protector.of(() -> orderItemService.save(orderItem))
-//                    .done(d -> resp.setStatus(HttpServletResponse.SC_CREATED))
-//                    .fail(f -> resp.setStatus(HttpServletResponse.SC_BAD_REQUEST));
-//        }
-//    }
-//
+            orderItem.setQuantity(requestOrder.getQuantity());
+            Protector.of(() -> orderItemService.save(orderItem))
+                    .done(d -> resp.setStatus(HttpServletResponse.SC_CREATED))
+                    .fail(f -> resp.setStatus(HttpServletResponse.SC_BAD_REQUEST));
+        }
+    }
+
     private void sendRedirectBuyNow(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long productID = Long.parseLong(request.getParameter("productId"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
@@ -124,11 +124,12 @@ public class ProductController extends HttpServlet {
     }
 
     private void sendRedirectProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Tạo một product giả
-        Product fakeProduct = productService.getByID(1L);
-        fakeProduct.setDescription(
+//        tạo một product giả để tạo chức năng
+        Product product = productService.getByID(1L);
+        request.getSession().setAttribute("product", product);
+       product.setDescription(
                 Optional.ofNullable(
-                        Stream.of(fakeProduct.getDescription().split("(\r\n|\n)"))
+                        Stream.of(product.getDescription().split("(\r\n|\n)"))
                                 .filter(paragraph -> !paragraph.isEmpty())
                                 .map(paragraph -> "<p>" + paragraph + "</p>")
                                 .collect(Collectors.joining(""))
@@ -136,7 +137,7 @@ public class ProductController extends HttpServlet {
         );
         // Lấy tổng số đánh giá (productReview) của sản phẩm
         int totalProductReviews = 150;
-        request.setAttribute("product", fakeProduct);
+        request.setAttribute("product", product);
         request.setAttribute("totalProductReviews", totalProductReviews);
         request.getRequestDispatcher("/views/client/product.jsp").forward(request, response);
     }

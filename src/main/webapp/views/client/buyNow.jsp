@@ -218,7 +218,6 @@
         bottom: -20px;
         left: 0;
     }
-
 </style>
 <script src="<c:url value="/js/handleBuyNowForm.js"/>" type="module"></script>
 </body>
