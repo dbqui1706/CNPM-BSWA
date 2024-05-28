@@ -230,7 +230,7 @@
                     <c:when test="${not empty sessionScope.currentUser}">
                         <div class="ratting-form-wrapper">
                             <div class="ratting-form">
-                                <form action="${pageContext.request.contextPath}/product    " method="post">
+                                <form action="${pageContext.request.contextPath}/product-review" method="post">
                                     <div class="row">
                                         <div class="col-md-3 mb-3">
                                             <select class="form-select ${not empty sessionScope.violations.ratingScoreViolations ?
