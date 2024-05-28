@@ -142,6 +142,7 @@
     </div> <!-- container.// -->
 </section> <!-- section-content.// -->
 
+<%--BP--%>
 <section class="section-content mb-5">
     <div class="container">
         <div class="row">
@@ -218,6 +219,7 @@
                     </div>
                 </c:if>
 
+<%--                Forn quanh gia--%>
                 <h3 id="review-form" class="pb-2">Thêm đánh giá</h3>
 
                 <c:if test="${not empty sessionScope.errorAddReviewMessage}">
@@ -235,6 +237,7 @@
                                              'is-invalid' : (not empty sessionScope.values.ratingScore ? 'is-valid' : '')}"
                                                     name="ratingScore">
                                                 <option disabled ${not empty sessionScope.values.ratingScore ? '' : 'selected'}>
+                                                    <!-- 2.1 chooseRating -->
                                                     Cho sao
                                                 </option>
                                                 <c:forEach var="i" begin="1" end="5">
@@ -255,6 +258,7 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col">
+                                            <!-- 2.2 chooseContent -->
                                             <textarea class="form-control ${not empty sessionScope.violations.contentViolations
                                                 ? 'is-invalid' : (not empty sessionScope.values.content ? 'is-valid' : '')}"
                                                       name="content"
@@ -275,6 +279,7 @@
                                     </div>
                                     <input type="hidden" name="userId" value="${sessionScope.currentUser.id}">
                                     <input type="hidden" name="productId" value="${requestScope.product.id}">
+                                    <!-- 3.1 Gửi đánh gia -->
                                     <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
                                 </form>
                             </div>

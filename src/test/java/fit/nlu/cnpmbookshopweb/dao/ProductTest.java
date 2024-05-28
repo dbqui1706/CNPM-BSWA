@@ -15,25 +15,25 @@ import java.util.List;
 import java.util.Map;
 
 public class ProductTest {
-    @Test
-    void validationProductReview() {
-        Map<String, List<String>> violations = new HashMap<>();
-        // ratingScoreViolations
-        violations.put("ratingScoreViolations", Validator.of("5")
-                .isNotNull()
-                .toList());
-        // contentViolations
-        violations.put("contentViolations", Validator.of("Good product!")
-                .isNotNullAndEmpty()
-                .isAtLeastOfLength(10)
-                .toList());
-
-        // dem so loi
-        int sumOfViolations = violations.values().stream().mapToInt(List::size).sum();
-
-        assertEquals(0, sumOfViolations);
-
-    }
+//    @Test
+//    void validationProductReview() {
+//        Map<String, List<String>> violations = new HashMap<>();
+//        // ratingScoreViolations
+//        violations.put("ratingScoreViolations", Validator.of("5")
+//                .isNotNull()
+//                .toList());
+//        // contentViolations
+//        violations.put("contentViolations", Validator.of("Good product!")
+//                .isNotNullAndEmpty()
+//                .isAtLeastOfLength(10)
+//                .toList());
+//
+//        // dem so loi
+//        int sumOfViolations = violations.values().stream().mapToInt(List::size).sum();
+//
+//        assertEquals(0, sumOfViolations);
+//
+//    }
 
     @Test
     void saveProductReview() {

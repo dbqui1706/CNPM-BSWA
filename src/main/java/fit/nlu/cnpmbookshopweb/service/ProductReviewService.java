@@ -60,7 +60,9 @@ public class ProductReviewService implements IProductReviewService {
                     user.getRole()
                     ));
 
-            Product product = productReview.get().getProduct();
+            Product product = productReview.get().
+
+                    getProduct();
             productReviewDto.setProduct(
                     new ProductDto(
 

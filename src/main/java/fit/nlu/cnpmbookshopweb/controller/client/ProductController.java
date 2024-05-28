@@ -89,12 +89,16 @@ public class ProductController extends HttpServlet {
     }
 
     // Xử lý thêm review
+
+
+
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ProductService productService = new ProductService();
         ProductReviewService productReviewService = new ProductReviewService();
 
-        // doPost(userId, productId, ratingScore, content) gửi về controller
+        //3.2  doPost(userId, productId, ratingScore, content) gửi về controller
         Map<String, String> values = new HashMap<>();
         values.put("userId", req.getParameter("userId"));
         values.put("productId", req.getParameter("productId"));
@@ -106,14 +110,14 @@ public class ProductController extends HttpServlet {
         System.out.println("Rating Score: " + req.getParameter("ratingScore"));
         System.out.println("Content: " + req.getParameter("content"));
 
-        // Validate(ratingScore, content)
+        // 4. Validate(ratingScore, content)
         Map<String, List<String>> violations = new HashMap<>();
-        violations.put("ratingScoreViolations", Validator.of(values.get("ratingScore"))
-                .isNotNull()
+        violations.put("ratingScoreViolations", Validator.of(values.get("ratingScore")) //kiem tra tinh hop le cua ratingScore
+                .isNotNull() // khong null
                 .toList());
-        violations.put("contentViolations", Validator.of(values.get("content"))
-                .isNotNullAndEmpty()
-                .isAtLeastOfLength(10)
+        violations.put("contentViolations", Validator.of(values.get("content")) // kiem tra tinh hop le cua content
+                .isNotNullAndEmpty() // kong null khong trong
+                .isAtLeastOfLength(10) // do dai it nhat la 10
                 .toList());
 
         int sumOfViolations = violations.values().stream().mapToInt(List::size).sum();
@@ -126,25 +130,26 @@ public class ProductController extends HttpServlet {
         // Nếu validate thành công
         if (sumOfViolations == 0) { // ok
 
-            // create ProductReview
+            // 5.1 create ProductReviewDto
             ProductReviewDto productReview = new ProductReviewDto(
                     0L,
-                    Protector.of(() -> Integer.parseInt(values.get("ratingScore"))).get(0),
+                    Protector.of(() -> Integer.parseInt(values.get("ratingScore"))).get(0), // chuyen doi ratingScore sang kieu so nguyen
                     values.get("content"),
                     1,
                     new Timestamp(System.currentTimeMillis()),
                     null,
                     Protector.of(() -> new UserService()
-                            .getByID(Long.parseLong(values.get("userId"))).get()).get().get(),
+                            .getByID(Long.parseLong(values.get("userId"))).get()).get().get(), //lay thong tin nguoi dung theo userID
                     Protector.of(() -> productService.getByID(
-                            Long.parseLong(values.get("productId"))).get()).get().get()
+                            Long.parseLong(values.get("productId"))).get()).get().get() // lay thong tin san pham theo productID
             );
 
-            // insert ProductReview
+            // 5.2 insert ProductReview
             Protector.of(() -> productReviewService.insert(productReview))
 
                     // Fragment: Save thành công hay ko 
-                    // Thành công: => Thông báo cho người dùng là đã đánh giá thành công
+                    //6.  Thành công: => Thông báo cho người dùng là đã đánh giá thành công
+
                     .done(run -> {
                         req.getSession().setAttribute("successMessage", successMessage);
                         anchor.set("#review");
