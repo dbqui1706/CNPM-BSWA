@@ -2,6 +2,7 @@ package fit.nlu.cnpmbookshopweb.dao;
 
 import fit.nlu.cnpmbookshopweb.model.User;
 import fit.nlu.cnpmbookshopweb.utils.DatabaseConnector;
+import org.jdbi.v3.core.Jdbi;
 
 public class UserDao extends AbstractDAO<User> {
     @Override
@@ -18,7 +19,7 @@ public class UserDao extends AbstractDAO<User> {
     public void delete(User user) {
 
     }
-
+// phương thức xử lý câu query để lấy id người dùng
     @Override
     public User getByID(Long id) {
         return DatabaseConnector.getJdbi().withHandle(handle -> {

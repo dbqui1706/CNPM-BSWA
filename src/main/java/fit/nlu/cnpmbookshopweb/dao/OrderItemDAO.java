@@ -17,15 +17,16 @@ public class OrderItemDAO extends AbstractDAO<OrderItem> {
                     .bind("product_id", orderItem.getProductID())
                     .bind("quantity", orderItem.getQuantity())
                     .bind("createdAt", new Timestamp(System.currentTimeMillis()))
-                    .bind("updatedAt", orderItem.getUpdatedAt())
+//                    .bind("updatedAt", orderItem.getUpdatedAt())
                     .executeAndReturnGeneratedKeys("id")
                     .mapTo(Long.class).one();
         });
     }
 
     @Override
-    public void update(OrderItem orderItem) {
+    public boolean update(OrderItem orderItem) {
 
+        return false;
     }
 
     @Override

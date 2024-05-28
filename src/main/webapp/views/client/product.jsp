@@ -116,10 +116,48 @@
                 </dl>
 
                 <div>
+<%--                    Nút thêm sản phẩm vào ds yêu thích--%>
                     <button type="button" class="btn btn-danger" id="add-wishlist-item"
                             title="Thêm vào danh sách yêu thích" ${requestScope.isWishlistItem == 1 ? 'disabled' : ''}>
                         <i class="bi bi-heart"></i>
                     </button>
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                    <script>
+                        $(document).ready(function() {
+                            $('#add-wishlist-item').click(function() {
+                                // Hiển thị hộp thoại xác nhận
+                                var confirmation = confirm("Bạn Muốn Thêm Sản Phẩm Này Vào Danh Sách Yêu Thích?");
+                                if (confirmation) {
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'addWishList',
+                                        data: {
+                                        },
+                                        success: function(response) {
+                                            // Xử lý phản hồi thành công từ servlet
+                                            alert(response);
+                                        },
+                                        error: function(xhr) {
+                                            if (xhr.status === 401) {
+                                                // Kiểm tra mã trạng thái 401 và hiển thị thông báo chưa đăng nhập
+                                                alert("Vui Lòng Đăng Nhập Để Thêm Vào Danh Sách Yêu Thích!");
+                                            } else if (xhr.status === 500) {
+                                                // Hiển thị thông báo lỗi từ server
+                                                alert("Sản Phẩm Đã Tồn Tại Trong Danh Sách Yêu Thích!");
+                                            } else {
+                                                // Xử lý các lỗi khác
+                                                alert("Không thể thêm sản phẩm vào danh sách yêu thích!");
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                    </script>
+
+
+
+                    <%--                    <a href="<c:url value="/checkout?productId=${param.id}"/>" class="btn btn-primary ms-2">Mua ngay</a>--%>
                     <%--                    <a href="<c:url value="/checkout?productId=${param.id}"/>" class="btn btn-primary ms-2">Mua ngay</a>--%>
                     <button type="button" class="btn btn-primary ms-2" id="buy-now">Mua ngay</button>
                     <button type="button" class="btn btn-light ms-2" id="add-cart-item">Thêm vào giỏ hàng</button>

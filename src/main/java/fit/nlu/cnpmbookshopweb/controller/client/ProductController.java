@@ -121,7 +121,9 @@ public class ProductController extends HttpServlet {
 //        tạo một product giả để tạo chức năng
         Product product = productService.getByID(1L);
         request.getSession().setAttribute("product", product);
-        product.setDescription(
+
+       product.setDescription(
+
                 Optional.ofNullable(
                         Stream.of(product.getDescription().split("(\r\n|\n)"))
                                 .filter(paragraph -> !paragraph.isEmpty())
@@ -139,5 +141,7 @@ public class ProductController extends HttpServlet {
     private void sendRedirectValidationInfo(HttpServletRequest request, HttpServletResponse response) {
 
     }
+
 }
+
 

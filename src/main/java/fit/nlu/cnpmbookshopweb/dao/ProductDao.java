@@ -11,15 +11,16 @@ public class ProductDao extends AbstractDAO<Product> implements IProductDAO {
     }
 
     @Override
-    public void update(Product product) {
+    public boolean update(Product product) {
 
+        return false;
     }
 
     @Override
     public void delete(Product product) {
 
     }
-
+    // phương thức xử lý câu query để lấy id sản phẩm
     @Override
     public Product getByID(Long id) {
         return DatabaseConnector.getJdbi().withHandle(handle -> {
