@@ -1,10 +1,10 @@
 package fit.nlu.cnpmbookshopweb.dao;
 
-import fit.nlu.cnpmbookshopweb.dao._interface.IWishListDAO;
 import fit.nlu.cnpmbookshopweb.utils.DatabaseConnector;
 import org.jdbi.v3.core.Jdbi;
 
-public class WishListDAO implements IWishListDAO {
+public class WishListDAO {
+//    Phương thức câu query thêm sản phẩm vào danh sách yêu thích
     public boolean addProductToWishlist(Long userId, Long productId) {
         if (userId == null || productId == null) {
             throw new IllegalArgumentException("User ID and Product ID must not be null");
@@ -20,6 +20,7 @@ public class WishListDAO implements IWishListDAO {
             return rowsAffected > 0;
         });
     }
+//    phương thức câu query đếm số sản phẩm và user để kiểm tra sự tồn tại
     public int countByUserIdAndProductId(Long userId, Long productId) {
         String sql = "SELECT COUNT(id) " +
                 "FROM wishlist_item " +

@@ -7,11 +7,8 @@ import org.jdbi.v3.core.Jdbi;
 
 public class ProductService {
     private final ProductDao productDao = new ProductDao();
-
+// lấy ra id sản phẩm
     public Product getByID(Long id) {
-        Product product = productDao.getByID(id);
-        product.setId(id);
-        return product;
+        return productDao.getByID(id);
     }
-
 }

@@ -19,15 +19,14 @@ public class UserDao extends AbstractDAO<User> {
     public void delete(User user) {
 
     }
-
+// phương thức xử lý câu query để lấy id người dùng
     @Override
     public User getByID(Long id) {
         return DatabaseConnector.getJdbi().withHandle(handle -> {
-            String sql = "SELECT * FROM user_ WHERE id=:id";
+            String sql = "SELECT * FROM USER WHERE id=:id";
             return handle.createQuery(sql).bind("id", id)
                     .mapToBean(User.class)
                     .one();
         });
     }
-
 }

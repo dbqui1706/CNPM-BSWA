@@ -13,11 +13,11 @@ public class OrderItemDAO extends AbstractDAO<OrderItem> {
                     "createdAt, updatedAt) VALUES (:order_id, :product_id, :quantity, " +
                     ":createdAt, :updatedAt)";
             return handle.createUpdate(sql)
-                    .bind("order_id", orderItem.getOrder().getId())
-                    .bind("product_id", orderItem.getProduct().getId())
+                    .bind("order_id", orderItem.getOrderID())
+                    .bind("product_id", orderItem.getProductID())
                     .bind("quantity", orderItem.getQuantity())
                     .bind("createdAt", new Timestamp(System.currentTimeMillis()))
-                    .bind("updatedAt", orderItem.getUpdatedAt())
+//                    .bind("updatedAt", orderItem.getUpdatedAt())
                     .executeAndReturnGeneratedKeys("id")
                     .mapTo(Long.class).one();
         });

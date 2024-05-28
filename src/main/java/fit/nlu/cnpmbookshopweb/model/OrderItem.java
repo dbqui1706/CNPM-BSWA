@@ -1,18 +1,14 @@
 package fit.nlu.cnpmbookshopweb.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class OrderItem extends AbstractModel {
-    private Order order;
-    private Product product;
+    private Long orderID;
+    private Long productID;
     private int quantity;
-
-    public OrderItem(Order order, Product product, int quantity) {
-        this.order = order;
-        this.product = product;
-        this.quantity = quantity;
-    }
 }

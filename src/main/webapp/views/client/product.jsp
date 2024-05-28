@@ -12,8 +12,6 @@
     <!-- Custom Scripts -->
     <script src="${pageContext.request.contextPath}/js/toast.js" type="module"></script>
     <script src="${pageContext.request.contextPath}/js/product.js" type="module"></script>
-
-
 </head>
 
 <body>
@@ -118,6 +116,7 @@
                 </dl>
 
                 <div>
+<%--                    Nút thêm sản phẩm vào ds yêu thích--%>
                     <button type="button" class="btn btn-danger" id="add-wishlist-item"
                             title="Thêm vào danh sách yêu thích" ${requestScope.isWishlistItem == 1 ? 'disabled' : ''}>
                         <i class="bi bi-heart"></i>
@@ -128,13 +127,11 @@
                             $('#add-wishlist-item').click(function() {
                                 // Hiển thị hộp thoại xác nhận
                                 var confirmation = confirm("Bạn Muốn Thêm Sản Phẩm Này Vào Danh Sách Yêu Thích?");
-
                                 if (confirmation) {
                                     $.ajax({
                                         type: 'POST',
                                         url: 'addWishList',
                                         data: {
-
                                         },
                                         success: function(response) {
                                             // Xử lý phản hồi thành công từ servlet
@@ -149,7 +146,7 @@
                                                 alert("Sản Phẩm Đã Tồn Tại Trong Danh Sách Yêu Thích!");
                                             } else {
                                                 // Xử lý các lỗi khác
-                                                alert("Lỗi không xác định!");
+                                                alert("Không thể thêm sản phẩm vào danh sách yêu thích!");
                                             }
                                         }
                                     });
@@ -160,7 +157,8 @@
 
 
 
-                <%--                    <a href="<c:url value="/checkout?productId=${param.id}"/>" class="btn btn-primary ms-2">Mua ngay</a>--%>
+                    <%--                    <a href="<c:url value="/checkout?productId=${param.id}"/>" class="btn btn-primary ms-2">Mua ngay</a>--%>
+                    <%--                    <a href="<c:url value="/checkout?productId=${param.id}"/>" class="btn btn-primary ms-2">Mua ngay</a>--%>
                     <button type="button" class="btn btn-primary ms-2" id="buy-now">Mua ngay</button>
                     <button type="button" class="btn btn-light ms-2" id="add-cart-item">Thêm vào giỏ hàng</button>
                 </div>
@@ -185,49 +183,7 @@
 <jsp:include page="/common/client/footer.jsp"/>
 
 <div class="toast-container position-fixed bottom-0 start-0 p-3"></div> <!-- toast-container.// -->
-<!-- Custom Scripts -->
-<script src="<c:url value="/js/toast.js"/>" type="text/javascript"></script>
-<%--<script src="<c:url value="/js/product.js"/>" type="text/javascript">--%>
-<script>
-    // import createToast, {toastComponent} from "./toast.js";
 
-    // STATIC DATA
-    const contextPathMetaTag = document.querySelector("meta[name='contextPath']");
-    const currentUserIdMetaTag = document.querySelector("meta[name='currentUserId']");
-    const productIdMetaTag = document.querySelector("meta[name='productId']");
-
-    const quantityInput = document.querySelector("#cart-item-quantity");
-    const productTitleElement = document.querySelector(".title");
-
-    // MESSAGES
-    const REQUIRED_SIGNIN_MESSAGE = "Vui lòng đăng nhập để thực hiện thao tác!";
-    const SUCCESS_ADD_CART_ITEM_MESSAGE = (quantity, productTitle) =>
-        `Đã thêm thành công ${quantity} sản phẩm ${productTitle} vào giỏ hàng!`;
-    const FAILED_ADD_CART_ITEM_MESSAGE = "Đã có lỗi truy vấn!";
-    const SUCCESS_ADD_WISHLIST_ITEM_MESSAGE = (productTitle) =>
-        `Đã thêm thành công sản phẩm ${productTitle} vào danh sách yêu thích!`;
-    const FAILED_ADD_WISHLIST_ITEM_MESSAGE = "Đã có lỗi truy vấn!";
-
-    // EVENT HANDLERS
-    function noneSigninEvent() {
-        createToast(toastComponent(REQUIRED_SIGNIN_MESSAGE));
-    }
-
-
-    // MAIN
-    const buyNowBtn = document.querySelector("#buy-now");
-    console.log(buyNowBtn)
-    if (currentUserIdMetaTag) {
-        buyNowBtn.addEventListener("click", async function() {
-            window.location.href = contextPathMetaTag.content + "/buy-now?productId="
-                + productIdMetaTag.content + "&quantity=" + quantityInput.value;
-        });
-    } else {
-        buyNowBtn.addEventListener("click", noneSigninEvent);
-    }
-
-
-</script>
 </body>
 
 </html>
