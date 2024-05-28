@@ -1,5 +1,6 @@
 package fit.nlu.cnpmbookshopweb.model;
 
+import fit.nlu.cnpmbookshopweb.dto.ProductDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,4 +23,5 @@ public class Product extends AbstractModel {
     private String description;
     private String imageName;
     private Integer shop;
+
 }

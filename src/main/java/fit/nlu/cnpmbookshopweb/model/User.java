@@ -1,6 +1,7 @@
 package fit.nlu.cnpmbookshopweb.model;
 
 import com.google.gson.Gson;
+
 import lombok.*;
 
 import java.util.StringJoiner;

@@ -1,18 +1,13 @@
 package fit.nlu.cnpmbookshopweb.controller.client;
 
-import fit.nlu.cnpmbookshopweb.dto.RequestOrderBuyNow;
-import fit.nlu.cnpmbookshopweb.dto.ResponseProductDetail;
+import fit.nlu.cnpmbookshopweb.dto.*;
 import fit.nlu.cnpmbookshopweb.model.Order;
 import fit.nlu.cnpmbookshopweb.model.OrderItem;
 import fit.nlu.cnpmbookshopweb.model.Product;
 import fit.nlu.cnpmbookshopweb.model.User;
-import fit.nlu.cnpmbookshopweb.service.OrderItemService;
-import fit.nlu.cnpmbookshopweb.service.OrderService;
-import fit.nlu.cnpmbookshopweb.service.ProductService;
-import fit.nlu.cnpmbookshopweb.service.UserService;
-import fit.nlu.cnpmbookshopweb.utils.JsonUtil;
-import fit.nlu.cnpmbookshopweb.utils.Protector;
 import fit.nlu.cnpmbookshopweb.service.*;
+import fit.nlu.cnpmbookshopweb.utils.*;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,9 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -127,7 +121,9 @@ public class ProductController extends HttpServlet {
 //        tạo một product giả để tạo chức năng
         Product product = productService.getByID(1L);
         request.getSession().setAttribute("product", product);
+
        product.setDescription(
+
                 Optional.ofNullable(
                         Stream.of(product.getDescription().split("(\r\n|\n)"))
                                 .filter(paragraph -> !paragraph.isEmpty())
@@ -145,4 +141,7 @@ public class ProductController extends HttpServlet {
     private void sendRedirectValidationInfo(HttpServletRequest request, HttpServletResponse response) {
 
     }
+
 }
+
+

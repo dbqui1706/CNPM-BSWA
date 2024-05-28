@@ -1,6 +1,7 @@
 package fit.nlu.cnpmbookshopweb.utils;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import lombok.Getter;
 import org.jdbi.v3.core.Jdbi;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.Properties;
 
 public class DatabaseConnector {
     private static MysqlDataSource mysqlDataSource = new MysqlDataSource();
+    @Getter
     private static Jdbi jdbi;
 
     static {
@@ -28,8 +30,5 @@ public class DatabaseConnector {
             System.out.println("Unsuccessfully connection!");
             throw new RuntimeException(e);
         }
-    }
-    public static Jdbi getJdbi(){
-        return jdbi;
     }
 }

@@ -1,7 +1,9 @@
 package fit.nlu.cnpmbookshopweb.model;
 
+
 import fit.nlu.cnpmbookshopweb.model.Location;
 import lombok.Getter;
+
 
 import java.sql.Timestamp;
 

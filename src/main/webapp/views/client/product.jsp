@@ -180,6 +180,226 @@
     </div> <!-- container.// -->
 </section> <!-- section-content.// -->
 
+<%--BP--%>
+<section class="section-content mb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <c:if test="${requestScope.totalProductReviews != 0}">
+                    <h3 id="review" class="pb-2">${requestScope.totalProductReviews} đánh giá</h3>
+
+                    <c:if test="${not empty sessionScope.successMessage}">
+                        <div class="alert alert-success" role="alert">${sessionScope.successMessage}</div>
+                    </c:if>
+                    <c:if test="${not empty sessionScope.errorDeleteReviewMessage}">
+                        <div class="alert alert-danger" role="alert">${sessionScope.errorDeleteReviewMessage}</div>
+                    </c:if>
+
+                    <div class="rattings-wrapper mb-5">
+                        <c:forEach var="productReview" items="${requestScope.productReviews}">
+                            <div class="sin-rattings mb-4">
+                                <div class="star-author-all mb-2 clearfix">
+                                    <div class="ratting-author float-start">
+                                        <h5 class="float-start me-3">${productReview.user.fullName}</h5>
+                                        <span>
+                                            <fmt:formatDate type="date" value="${productReview.createdAt}"/>
+                                        </span>
+                                    </div>
+                                    <div class="ratting-star float-end">
+                                        <span class="rating-stars me-2">
+                                          <c:forEach begin="1" end="5" step="1" var="i">
+                                              <i class="bi bi-star-fill ${i <= productReview.ratingScore ? 'active' : ''}"></i>
+                                          </c:forEach>
+                                        </span>
+                                        <span>(${productReview.ratingScore})</span>
+                                    </div>
+                                </div>
+                                <div>
+                                        ${productReview.content}
+                                </div>
+                            </div>
+                        </c:forEach>
+                        <nav class="mt-4 d-flex justify-content-center">
+                            <ul class="pagination">
+                                <li class="page-item ${requestScope.pageReview == 1 ? 'disabled' : ''}">
+                                    <a class="page-link"
+                                       href="${pageContext.request.contextPath}/product?id=${requestScope.product.id}&pageReview=${requestScope.pageReview - 1}#review">
+                                        Trang trước
+                                    </a>
+                                </li>
+
+                                <c:forEach begin="1" end="${requestScope.totalPagesOfProductReviews}" var="i">
+                                    <c:choose>
+                                        <c:when test="${requestScope.pageReview == i}">
+                                            <li class="page-item active">
+                                                <a class="page-link">${i}</a>
+                                            </li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                   href="${pageContext.request.contextPath}/product?id=${requestScope.product.id}&pageReview=${i}#review">
+                                                        ${i}
+                                                </a>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:forEach>
+
+                                <li class="page-item ${requestScope.pageReview == requestScope.totalPagesOfProductReviews ? 'disabled' : ''}">
+                                    <a class="page-link"
+                                       href="${pageContext.request.contextPath}/product?id=${requestScope.product.id}&pageReview=${requestScope.pageReview + 1}#review">
+                                        Trang sau
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </c:if>
+
+<%--                Forn quanh gia--%>
+                <h3 id="review-form" class="pb-2">Thêm đánh giá</h3>
+
+                <c:if test="${not empty sessionScope.errorAddReviewMessage}">
+                    <div class="alert alert-danger" role="alert">${sessionScope.errorAddReviewMessage}</div>
+                </c:if>
+
+                <c:choose>
+                    <c:when test="${not empty sessionScope.currentUser}">
+                        <div class="ratting-form-wrapper">
+                            <div class="ratting-form">
+                                <form action="${pageContext.request.contextPath}/product-review" method="post">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <select class="form-select ${not empty sessionScope.violations.ratingScoreViolations ?
+                                             'is-invalid' : (not empty sessionScope.values.ratingScore ? 'is-valid' : '')}"
+                                                    name="ratingScore">
+                                                <option disabled ${not empty sessionScope.values.ratingScore ? '' : 'selected'}>
+                                                    <!-- 2.1 chooseRating -->
+                                                    Cho sao
+                                                </option>
+                                                <c:forEach var="i" begin="1" end="5">
+                                                    <option value="${i}" ${sessionScope.values.ratingScore == i ? 'selected' : ''}>${i}</option>
+                                                </c:forEach>
+                                            </select>
+                                            <c:if test="${not empty sessionScope.violations.ratingScoreViolations}">
+                                                <div class="invalid-feedback">
+                                                    <ul class="list-unstyled mb-0">
+                                                        <c:forEach var="violation"
+                                                                   items="${sessionScope.violations.ratingScoreViolations}">
+                                                            <li>${violation}</li>
+                                                        </c:forEach>
+                                                    </ul>
+                                                </div>
+                                            </c:if>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <!-- 2.2 chooseContent -->
+                                            <textarea class="form-control ${not empty sessionScope.violations.contentViolations
+                                                ? 'is-invalid' : (not empty sessionScope.values.content ? 'is-valid' : '')}"
+                                                      name="content"
+                                                      placeholder="Nội dung đánh giá"
+                                                      rows="3">${sessionScope.values.content}
+                                            </textarea>
+                                            <c:if test="${not empty sessionScope.violations.contentViolations}">
+                                                <div class="invalid-feedback">
+                                                    <ul class="list-unstyled mb-0">
+                                                        <c:forEach var="violation"
+                                                                   items="${sessionScope.violations.contentViolations}">
+                                                            <li>${violation}</li>
+                                                        </c:forEach>
+                                                    </ul>
+                                                </div>
+                                            </c:if>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="userId" value="${sessionScope.currentUser.id}">
+                                    <input type="hidden" name="productId" value="${requestScope.product.id}">
+                                    <!-- 3.1 Gửi đánh gia -->
+                                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                                </form>
+                            </div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <p>Vui lòng <a href="${pageContext.request.contextPath}/signin">đăng nhập</a> để đánh giá sản
+                            phẩm.</p>
+                    </c:otherwise>
+                </c:choose>
+                <%-- Xóa các attribute của AddProductReviewServlet khỏi session --%>
+                <c:remove var="values" scope="session"/>
+                <c:remove var="violations" scope="session"/>
+                <c:remove var="successMessage" scope="session"/>
+                <c:remove var="errorAddReviewMessage" scope="session"/>
+                <c:remove var="errorDeleteReviewMessage" scope="session"/>
+            </div> <!-- col.// -->
+        </div> <!-- row.// -->
+    </div> <!-- container.//  -->
+</section> <!-- section-content.// -->
+
+<section class="section-content mb-5">
+    <div class="container">
+        <h3 class="pb-2">Sản phẩm liên quan</h3>
+        <div class="row item-grid">
+            <c:forEach var="relatedProduct" items="${requestScope.relatedProducts}">
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card p-3 mb-4">
+                        <a href="${pageContext.request.contextPath}/product?id=${relatedProduct.id}"
+                           class="img-wrap text-center">
+                            <c:choose>
+                                <c:when test="${empty relatedProduct.imageName}">
+                                    <img width="200"
+                                         height="200"
+                                         class="img-fluid"
+                                         src="${pageContext.request.contextPath}/img/280px.png"
+                                         alt="280px.png">
+                                </c:when>
+                                <c:otherwise>
+                                    <img width="200"
+                                         height="200"
+                                         class="img-fluid"
+                                         src="${pageContext.request.contextPath}/image/${relatedProduct.imageName}"
+                                         alt="${relatedProduct.imageName}">
+                                </c:otherwise>
+                            </c:choose>
+                        </a>
+                        <figcaption class="info-wrap mt-2">
+                            <a href="${pageContext.request.contextPath}/product?id=${relatedProduct.id}"
+                               class="title">${relatedProduct.name}</a>
+                            <div>
+                                <c:choose>
+                                    <c:when test="${relatedProduct.discount == 0}">
+                    <span class="price mt-1 fw-bold">
+                      <fmt:formatNumber pattern="#,##0" value="${relatedProduct.price}"/>₫
+                    </span>
+                                    </c:when>
+                                    <c:otherwise>
+                    <span class="price mt-1 fw-bold">
+                      <fmt:formatNumber
+                              pattern="#,##0"
+                              value="${relatedProduct.price * (100 - relatedProduct.discount) / 100}"/>₫
+                    </span>
+                                        <span class="ms-2 text-muted text-decoration-line-through">
+                      <fmt:formatNumber pattern="#,##0" value="${relatedProduct.price}"/>₫
+                    </span>
+                                        <span class="ms-2 badge bg-info">
+                      -<fmt:formatNumber pattern="#,##0" value="${relatedProduct.discount}"/>%
+                    </span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </figcaption>
+                    </div>
+                </div>
+                <!-- col.// -->
+            </c:forEach>
+        </div> <!-- row.// -->
+    </div> <!-- container.// -->
+</section> <!-- section-content.// -->
+
+
 <jsp:include page="/common/client/footer.jsp"/>
 
 <div class="toast-container position-fixed bottom-0 start-0 p-3"></div> <!-- toast-container.// -->
