@@ -11,8 +11,9 @@ public class ProductDao extends AbstractDAO<Product> implements IProductDAO {
     }
 
     @Override
-    public void update(Product product) {
+    public boolean update(Product product) {
 
+        return false;
     }
 
     @Override

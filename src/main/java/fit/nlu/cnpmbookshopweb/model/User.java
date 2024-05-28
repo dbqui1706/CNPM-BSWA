@@ -19,9 +19,19 @@ public class User extends AbstractModel{
     private String address;
     private String role;
 
+    public User(Long id, String username, String password, String fullName, String email, String phoneNumber, Integer gender, String address, String role) {
+        super.setId(id);
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.gender = gender;
+        this.address = address;
+        this.role = role;
+    }
     @Override
     public String toString() {
-
         return new StringJoiner(",\n\t", User.class.getSimpleName() + "{\n", "\n}")
                 .add("id:" + getId())
                 .add("username:" + username)
